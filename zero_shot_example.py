@@ -17,7 +17,7 @@ from utils import (
 # or pacemaker detection. It has a short context window because it
 # uses the CLIP BPE tokenizer, so it can't process an entire report at once.
 echo_clip, _, preprocess_val = create_model_and_transforms(
-    "hf-hub:mkaichristensen/echo-clip", precision="bf16", device="cuda"
+    "hf-hub:mkaichristensen/echo-clip", precision="fp32", device="cpu"
 )
 
 # We'll use random noise in the shape of a 10-frame video in this example, but you can use any image
@@ -30,8 +30,6 @@ test_video = torch.stack(
     [preprocess_val(T.ToPILImage()(frame)) for frame in test_video], dim=0
 )
 test_video = test_video[0:min(40, len(test_video)):2]
-test_video = test_video.cuda()
-test_video = test_video.to(torch.bfloat16)
 
 # Be sure to normalize the CLIP embedding after calculating it to make
 # cosine similarity between embeddings easier to calculate.
